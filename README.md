@@ -5,7 +5,7 @@ The Challenge was all about creating a dashboard of Revenue report and identifyi
 Visualization Tool : PowerBI
 
 Process includes:
-1) Importing data from Snowflake and transforming data in power query editor for data cleaning
+1) Importing data from Hive and transforming data in power query editor for data cleaning
 2) Data modeling
 3) Identifying & Creating Measures using DAX.
 4) Validating all data
