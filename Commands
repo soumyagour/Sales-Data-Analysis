@@ -1,1 +1,130 @@
+# Project: Sales Data Analysis
+ 
+•	hive;
+•	show databases;
+•	CREATE DATABASE Sales_data;
+•	Use sales_data;
+•	Quit;
+
+ 
+
+•	hdfs dfs -ls /user/hadoop/
+•	hdfs dfs -ls /user/hive
+•	hdfs dfs -ls /user/
+•	cd hive
+•	hdfs dfs -ls /user/hive/warehouse/
+•	hdfs dfs -ls /user/hive/warehouse/Sales_data.db/
+•	hive;
+•	use Sales_data;
+
+# Creating External Table
+
+CREATE EXTERNAL TABLE IF NOT EXISTS sales_table
+ (
+  region  string,
+  country  string,
+  item_type string,
+  sales_channel string,
+  order_priority string,
+  order_date string,
+  order_id string,
+  ship_date string,
+  units_sold string,
+  unit_price string,
+  unit_cost string,
+  total_revenue string,
+  total_cost string,
+  total_profit string
+  )ROW FORMAT DELIMITED
+  FIELDS TERMINATED BY ','
+  LOCATION 's3://sales-data-analysis/csv/';
+
+
+# Queries for analysis:
+•	select * from Sales_table;
+•	desc Sales_table;
+•	desc formatted Sales_table;
+•	select * from Sales_table limit 15;
+•	select count(*) from Sales_table;
+•	select count(distinct order_id) as total_orders from sales_table;
+•	select  distinct item_type from sales_table;
+•	select item_type, count(distinct  order_id) as total_orders from sales_table group by item_type;
+
+#  to remove header:
+•	set hive.cli.print.header = True
+
+•	select item_type, order_priority,count(distinct  order_id) as total_orders from sales_table group by item_type and order_priority having item_type <> item_type;
+•	select item_type, order_id, order_priority from sales_table;
+•	desc extended Sales_table;
+
+#  Creating Final Table
+CREATE TABLE IF NOT EXISTS final_sales_table
+(
+region string,
+item_type string,
+sales_channel string,
+order_priority string,
+order_date string,
+order_id string,
+ship_date string,
+shiped_date string,
+units_sold string,
+unit_price  string,
+unit_cost  string,
+total_revenue string,
+total_cost  string,
+total_profit stringde
+) PARTITIONED BY (country string)
+Stored AS ORC;
+
+# Queries for Analysis:
+•	Select * from final_sales_table limit 10;
+•	Desc final_sales_table;
+•	Desc formatted final_sales_table;
+•	Desc extended final_Sales_table;
+•	Select item_type, order_date, order_id, sales_channel from final_sales_table limit 10;
+•	Select item_type, order_date, order_id, sales_channel, country from final_sales_table limit 10;
+
+SET hive.exec.compress.intermediate =True;
+SET hive.exec.dynamic.partition = True;
+SET hive.exec.dynamic.partition.mode = nonstrict;
+SET hive.mapred.mode = nonstrict;
+
+INSERT OVERWRITE TABLE final_sales_table partition(country)
+SELECT
+cast(region as string),
+cast(item_type as string),
+cast(sales_channel as string),
+cast(order_priority as string),
+coalesce(
+ CAST(from_unixtime(unix_timestamp(order_date, 'MM/dd/yyyy'), "yyyy") as string),
+ CAST(from_unixtime(unix_timestamp(order_date, 'dd-MM-yyyy'), "yyyy")AS STRING)
+)as order_date,
+cast(order_id as int),
+coalesce(
+ CAST(from_unixtime(unix_timestamp(ship_date, 'MM/dd/yyyy'), 'yyyy-MM-dd') as string),
+ CAST(from_unixtime(unix_timestamp(ship_date, 'dd-MM-yyyy'), 'yyyy-MM-dd') as string)
+),
+coalesce(
+ CAST(from_unixtime(unix_timestamp(ship_date, 'MM/dd/yyyy'), "yyyy") as string),
+ CAST(from_unixtime(unix_timestamp(ship_date, 'dd-MM-yyyy'), "yyyy")AS STRING)
+)as shipped_date,
+cast(units_sold as int),
+cast(unit_price as float),
+cast(unit_cost as float),
+cast(total_revenue as float),
+cast(total_cost as float),
+cast(total_profit as float),
+cast(country as string)
+FROM sales_table;
+
+# Queries for Analysis:
+•	Select * from final_sales_table where country = ‘Iceland’;
+•	Quit;
+•	hdfs dfs -ls /user/hive/warehouse/Sales_data.db/final_sales_table/
+•	hdfs df - ls/user/hive/warehouse/sales_data.db/final_sales_table/country = country
+•	hdfs dfs -ls /user/hive/warehouse/Sales_data.db/final_sales_table/country = Russia
+ 
+
+
 
