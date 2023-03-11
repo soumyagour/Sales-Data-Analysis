@@ -11,4 +11,4 @@ Process includes:
 4) Validating all data
 5) Creating a dashboard using appropriate Visualization.
 
-Tech Stack: S3, EMR, Hive. PowerBI
+Tech Stack: S3, EMR, Hive, Tableau
