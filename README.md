@@ -13,7 +13,8 @@ Process includes:
 
 Tech Stack: S3, EMR, Hive, PowerBI
 
-#Services and tools used:
+##Services and tools used:
+
 Amaozon S3: Amazon S3 is an object storage service that provides manufacturing scalability, data availability, security, and performance.
 
 AWS EMR: Amazon Elastic Map Reduce is a managed clustered platform that simplifies running big data frameworks on AWS to process and analyze vast amounts of data.
